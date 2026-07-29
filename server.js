@@ -2,7 +2,6 @@ const express = require("express");
 const youtube = require("./youtube");
 const goals = require("./goals");
 const path = require("path");
-const crypto = require("crypto");
 
 require("dotenv").config();
 
@@ -39,6 +38,7 @@ app.get("/",(req,res)=>{
 
 
 
+
 // ===============================
 // OVERLAY
 // ===============================
@@ -59,10 +59,12 @@ app.get("/overlay.html",(req,res)=>{
 
 
 // ===============================
-// BANCO TEMPORÁRIO DE CONTADORES
+// BANCO TEMPORÁRIO
+// ID = ID DA LIVE YOUTUBE
 // ===============================
 
 const contadores = {};
+
 
 
 
@@ -89,8 +91,10 @@ function extrairVideoId(url){
 
 
 
+
+
 // ===============================
-// CRIA CONTADOR
+// CRIAR CONTADOR
 // ===============================
 
 app.post("/video", async(req,res)=>{
@@ -105,64 +109,86 @@ app.post("/video", async(req,res)=>{
 
     if(!videoId){
 
+
         return res.status(400).json({
 
             erro:"Link inválido"
 
         });
 
+
     }
 
 
 
-    // cria ID único
 
-    const contadorId =
-    crypto.randomBytes(5)
-    .toString("hex");
+    // O ID DO CONTADOR É A PRÓPRIA LIVE
 
-
-
-
-    contadores[contadorId]={
-
-
-        videoId,
-
-
-        dados:{
-
-
-            online:false,
-
-            id:videoId,
-
-            titulo:"",
-
-            thumb:"",
-
-            likes:0,
-
-            viewers:0,
-
-            views:0,
-
-            meta:10,
-
-            progresso:0
-
-        }
-
-    };
+    const contadorId = videoId;
 
 
 
 
-    console.log(
-        "Novo contador:",
-        contadorId,
-        videoId
-    );
+    // ===================================
+    // NÃO SOBRESCREVE CONTADOR EXISTENTE
+    // ===================================
+
+    if(!contadores[contadorId]){
+
+
+        contadores[contadorId]={
+
+
+            videoId,
+
+
+            dados:{
+
+
+                online:false,
+
+                id:videoId,
+
+                titulo:"",
+
+                thumb:"",
+
+                likes:0,
+
+                viewers:0,
+
+                views:0,
+
+                meta:10,
+
+                progresso:0
+
+            }
+
+
+        };
+
+
+
+        console.log(
+            "Novo contador criado:",
+            contadorId
+        );
+
+
+    }else{
+
+
+        console.log(
+            "Contador já existe:",
+            contadorId
+        );
+
+
+    }
+
+
+
 
 
 
@@ -170,7 +196,10 @@ app.post("/video", async(req,res)=>{
 
 
 
+
+
     res.json({
+
 
         ok:true,
 
@@ -181,9 +210,12 @@ app.post("/video", async(req,res)=>{
         id:contadorId,
 
 
+
         overlay:
 
+
         `${req.protocol}://${req.get("host")}/overlay.html?id=${contadorId}`
+
 
 
     });
@@ -197,8 +229,10 @@ app.post("/video", async(req,res)=>{
 
 
 
+
+
 // ===============================
-// ATUALIZA CONTADOR ESPECÍFICO
+// ATUALIZA UM CONTADOR
 // ===============================
 
 async function atualizarDados(contadorId){
@@ -231,10 +265,12 @@ async function atualizarDados(contadorId){
 
 
 
+
     const meta =
     goals.calcularMeta(
         dados.likes
     );
+
 
 
 
@@ -243,6 +279,8 @@ async function atualizarDados(contadorId){
         dados.likes,
         meta
     );
+
+
 
 
 
@@ -266,14 +304,18 @@ async function atualizarDados(contadorId){
 
 
 
+
+
     console.log(
 
+        "CONTADOR:",
         contadorId,
 
-        "likes:",
+        "| LIKES:",
         dados.likes
 
     );
+
 
 
 }
@@ -283,8 +325,11 @@ async function atualizarDados(contadorId){
 
 
 
+
+
+
 // ===============================
-// ATUALIZA TODOS
+// ATUALIZA TODOS OS CONTADORES
 // ===============================
 
 setInterval(()=>{
@@ -308,8 +353,10 @@ setInterval(()=>{
 
 
 
+
+
 // ===============================
-// ENVIA DADOS DO OVERLAY
+// ENVIA DADOS PARA OVERLAY
 // ===============================
 
 app.get("/dados/:id",(req,res)=>{
@@ -331,13 +378,27 @@ app.get("/dados/:id",(req,res)=>{
 
     if(!contador){
 
+
         return res.json({
 
-            online:false
+
+            online:false,
+
+
+            likes:0,
+
+
+            meta:10,
+
+
+            progresso:0
+
 
         });
 
+
     }
+
 
 
 
@@ -347,6 +408,8 @@ app.get("/dados/:id",(req,res)=>{
 
 
 });
+
+
 
 
 
@@ -367,6 +430,13 @@ app.post("/fechar/:id",(req,res)=>{
 
 
 
+    console.log(
+        "Contador removido:",
+        req.params.id
+    );
+
+
+
     res.json({
 
         ok:true
@@ -375,6 +445,9 @@ app.post("/fechar/:id",(req,res)=>{
 
 
 });
+
+
+
 
 
 
