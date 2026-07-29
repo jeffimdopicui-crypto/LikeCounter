@@ -10,7 +10,11 @@ const app = express();
 
 app.use(express.json());
 
-app.use(express.static("public"));
+app.use(
+    express.static(
+        require("path").join(__dirname, "public")
+    )
+);
 
 
 
@@ -18,16 +22,37 @@ app.use(express.static("public"));
 // ABRE PAINEL COMO HOME
 // ===============================
 
+const path = require("path");
+
+
 app.get("/", (req,res)=>{
 
     res.sendFile(
-        __dirname + "/public/painel.html"
+        path.join(
+            __dirname,
+            "public",
+            "painel.html"
+        )
     );
 
 });
 
 
+// ===============================
+// OVERLAY OBS
+// ===============================
 
+app.get("/overlay.html", (req,res)=>{
+
+    res.sendFile(
+        path.join(
+            __dirname,
+            "public",
+            "overlay.html"
+        )
+    );
+
+});
 
 
 let videoAtual = null;
@@ -247,15 +272,18 @@ setInterval(
 app.get("/dados",(req,res)=>{
 
 
+    res.setHeader(
+        "Cache-Control",
+        "no-store"
+    );
+
+
     res.json(
-
         dadosAtuais
-
     );
 
 
 });
-
 
 
 
