@@ -1,6 +1,8 @@
 const express = require("express");
 const youtube = require("./youtube");
 const goals = require("./goals");
+const path = require("path");
+const crypto = require("crypto");
 
 require("dotenv").config();
 
@@ -10,22 +12,20 @@ const app = express();
 
 app.use(express.json());
 
+
 app.use(
     express.static(
-        require("path").join(__dirname, "public")
+        path.join(__dirname,"public")
     )
 );
 
 
 
 // ===============================
-// ABRE PAINEL COMO HOME
+// HOME
 // ===============================
 
-const path = require("path");
-
-
-app.get("/", (req,res)=>{
+app.get("/",(req,res)=>{
 
     res.sendFile(
         path.join(
@@ -38,11 +38,12 @@ app.get("/", (req,res)=>{
 });
 
 
+
 // ===============================
-// OVERLAY OBS
+// OVERLAY
 // ===============================
 
-app.get("/overlay.html", (req,res)=>{
+app.get("/overlay.html",(req,res)=>{
 
     res.sendFile(
         path.join(
@@ -55,32 +56,13 @@ app.get("/overlay.html", (req,res)=>{
 });
 
 
-let videoAtual = null;
 
 
+// ===============================
+// BANCO TEMPORÁRIO DE CONTADORES
+// ===============================
 
-let dadosAtuais = {
-
-    online:false,
-
-    id:"",
-
-    titulo:"",
-
-    thumb:"",
-
-    likes:0,
-
-    viewers:0,
-
-    views:0,
-
-    meta:10,
-
-    progresso:0
-
-};
-
+const contadores = {};
 
 
 
@@ -96,35 +78,32 @@ function extrairVideoId(url){
     /(?:youtube\.com\/(?:watch\?v=|live\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
 
 
-
     const match =
     url.match(regex);
 
 
-
     return match ? match[1] : null;
-
 
 }
 
 
 
 
-
 // ===============================
-// RECEBE LIVE
+// CRIA CONTADOR
 // ===============================
 
 app.post("/video", async(req,res)=>{
 
 
-    const id =
-    extrairVideoId(req.body.url);
+    const videoId =
+    extrairVideoId(
+        req.body.url
+    );
 
 
 
-    if(!id){
-
+    if(!videoId){
 
         return res.status(400).json({
 
@@ -132,25 +111,62 @@ app.post("/video", async(req,res)=>{
 
         });
 
-
     }
 
 
 
+    // cria ID único
 
-    videoAtual = id;
+    const contadorId =
+    crypto.randomBytes(5)
+    .toString("hex");
+
+
+
+
+    contadores[contadorId]={
+
+
+        videoId,
+
+
+        dados:{
+
+
+            online:false,
+
+            id:videoId,
+
+            titulo:"",
+
+            thumb:"",
+
+            likes:0,
+
+            viewers:0,
+
+            views:0,
+
+            meta:10,
+
+            progresso:0
+
+        }
+
+    };
+
 
 
 
     console.log(
-        "Monitorando:",
-        id
+        "Novo contador:",
+        contadorId,
+        videoId
     );
 
 
 
-    await atualizarDados();
-
+    await atualizarDados(contadorId);
 
 
 
@@ -158,11 +174,16 @@ app.post("/video", async(req,res)=>{
 
         ok:true,
 
-        video:id,
+
+        video:videoId,
+
+
+        id:contadorId,
 
 
         overlay:
-        `${req.protocol}://${req.get("host")}/overlay.html`
+
+        `${req.protocol}://${req.get("host")}/overlay.html?id=${contadorId}`
 
 
     });
@@ -176,25 +197,35 @@ app.post("/video", async(req,res)=>{
 
 
 
-
 // ===============================
-// BUSCA DADOS YOUTUBE
+// ATUALIZA CONTADOR ESPECÍFICO
 // ===============================
 
-async function atualizarDados(){
+async function atualizarDados(contadorId){
 
 
-    if(!videoAtual)
+
+    const contador =
+    contadores[contadorId];
+
+
+
+    if(!contador)
+
         return;
 
 
 
+
     const dados =
-    await youtube.buscarDados(videoAtual);
+    await youtube.buscarDados(
+        contador.videoId
+    );
 
 
 
     if(!dados)
+
         return;
 
 
@@ -216,7 +247,7 @@ async function atualizarDados(){
 
 
 
-    dadosAtuais = {
+    contador.dados={
 
 
         ...dados,
@@ -235,10 +266,12 @@ async function atualizarDados(){
 
 
 
-
     console.log(
 
-        `LIKES ${dados.likes} | META ${meta} | ${progresso.toFixed(1)}%`
+        contadorId,
+
+        "likes:",
+        dados.likes
 
     );
 
@@ -249,15 +282,25 @@ async function atualizarDados(){
 
 
 
-// atualiza automaticamente
 
-setInterval(
+// ===============================
+// ATUALIZA TODOS
+// ===============================
 
-    atualizarDados,
+setInterval(()=>{
 
-    15000
 
-);
+    Object.keys(contadores)
+    .forEach(id=>{
+
+
+        atualizarDados(id);
+
+
+    });
+
+
+},15000);
 
 
 
@@ -266,10 +309,10 @@ setInterval(
 
 
 // ===============================
-// DADOS PARA OVERLAY
+// ENVIA DADOS DO OVERLAY
 // ===============================
 
-app.get("/dados",(req,res)=>{
+app.get("/dados/:id",(req,res)=>{
 
 
     res.setHeader(
@@ -278,8 +321,28 @@ app.get("/dados",(req,res)=>{
     );
 
 
+
+    const contador =
+    contadores[
+        req.params.id
+    ];
+
+
+
+    if(!contador){
+
+        return res.json({
+
+            online:false
+
+        });
+
+    }
+
+
+
     res.json(
-        dadosAtuais
+        contador.dados
     );
 
 
@@ -292,47 +355,15 @@ app.get("/dados",(req,res)=>{
 
 
 // ===============================
-// FECHAR LIVE
+// FECHAR CONTADOR
 // ===============================
 
-app.post("/fechar",(req,res)=>{
+app.post("/fechar/:id",(req,res)=>{
 
 
-    videoAtual=null;
-
-
-
-    dadosAtuais={
-
-
-        online:false,
-
-
-        id:"",
-
-
-        titulo:"",
-
-
-        thumb:"",
-
-
-        likes:0,
-
-
-        viewers:0,
-
-
-        views:0,
-
-
-        meta:10,
-
-
-        progresso:0
-
-
-    };
+    delete contadores[
+        req.params.id
+    ];
 
 
 
@@ -344,8 +375,6 @@ app.post("/fechar",(req,res)=>{
 
 
 });
-
-
 
 
 
@@ -366,9 +395,7 @@ app.listen(PORT,()=>{
 
 
     console.log(
-
         `http://localhost:${PORT}`
-
     );
 
 

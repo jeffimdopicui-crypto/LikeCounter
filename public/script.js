@@ -180,19 +180,43 @@ async function atualizar(){
     try{
 
 
+        if(!window.CONTADOR_ID){
+
+
+            console.log(
+                "Nenhum ID de contador encontrado"
+            );
+
+
+            return;
+
+
+        }
+
+
+
+
         const resposta =
 
         await fetch(
 
-            "/dados?cache=" + Date.now()
+            "/dados/" +
+
+            window.CONTADOR_ID +
+
+            "?cache=" +
+
+            Date.now()
 
         );
+
 
 
 
         const dados =
 
         await resposta.json();
+
 
 
 
@@ -204,9 +228,11 @@ async function atualizar(){
 
 
 
+
         likes =
 
         dados.likes || 0;
+
 
 
 
@@ -232,15 +258,26 @@ async function atualizar(){
 
 
 
-        // DEBUG
+
+
+
         console.log(
-            "LIKES:",
+
+            "CONTADOR:",
+
+            window.CONTADOR_ID,
+
+            "| LIKES:",
+
             likes,
+
             "| META:",
-            metaAtual,
-            "| PROGRESSO:",
-            progresso + "%"
+
+            metaAtual
+
         );
+
+
 
 
 
@@ -251,6 +288,8 @@ async function atualizar(){
         likes.toLocaleString(
             "pt-BR"
         );
+
+
 
 
 
@@ -267,14 +306,8 @@ async function atualizar(){
 
 
 
+
         if(barra){
-
-
-
-            console.log(
-                "APLICANDO BARRA:",
-                progresso + "%"
-            );
 
 
 
@@ -313,7 +346,6 @@ async function atualizar(){
 
 
 }
-
 
 
 

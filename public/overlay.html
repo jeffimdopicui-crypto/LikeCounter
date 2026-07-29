@@ -102,6 +102,27 @@
 
 <script src="config.js"></script>
 
+
+<script>
+
+
+// pega o ID único criado pelo servidor
+
+const contadorID =
+new URLSearchParams(
+    window.location.search
+).get("id");
+
+
+// salva global para o script.js usar
+
+window.CONTADOR_ID = contadorID;
+
+
+</script>
+
+
+
 <script src="script.js"></script>
 
 

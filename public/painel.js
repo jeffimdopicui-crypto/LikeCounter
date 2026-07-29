@@ -52,14 +52,21 @@ async function iniciar(){
 
 
 
+    console.log(
+        "RESPOSTA DO SERVIDOR:",
+        dados
+    );
+
+
+
+
 
     if(dados.ok){
 
 
 
         const overlayURL =
-        dados.overlay ||
-        window.location.origin + "/overlay.html";
+        dados.overlay;
 
 
 
@@ -80,10 +87,23 @@ async function iniciar(){
         <br>
 
 
-        🎥 ID:
+        🎥 ID DA LIVE:
 
         <b>
         ${dados.video}
+        </b>
+
+
+
+        <br><br>
+
+
+        🔐 ID DO CONTADOR:
+
+        <b style="color:#00eaff">
+
+        ${dados.id}
+
         </b>
 
 
