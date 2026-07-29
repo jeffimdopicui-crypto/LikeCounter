@@ -54,6 +54,10 @@ async function buscarDados(videoId) {
 
         const video = data.items[0];
 
+        console.log("RESPOSTA YOUTUBE:");
+        console.log(video.statistics);
+        console.log(video.liveStreamingDetails);
+
 
 
         return {
