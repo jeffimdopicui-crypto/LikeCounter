@@ -51,20 +51,13 @@ body{
 
 .box{
 
-
-    width:430px;
-
+    width:100%;
 
     padding:35px;
 
-
-
     border-radius:25px;
 
-
-
     background:
-
 
     linear-gradient(
         145deg,
@@ -72,32 +65,20 @@ body{
         rgba(5,8,18,.96)
     );
 
-
-
     border:
-
     1px solid rgba(0,234,255,.25);
 
-
-
     box-shadow:
-
 
     0 0 35px rgba(0,110,255,.45),
 
     inset 0 0 35px rgba(255,255,255,.04);
 
-
-
     backdrop-filter:blur(15px);
-
-
 
     position:relative;
 
-
     overflow:hidden;
-
 
 }
 
@@ -528,19 +509,26 @@ button:hover{
     display:grid;
 
     grid-template-columns:
-        minmax(420px, 460px)
-        minmax(560px, 1fr);
+    minmax(450px, 1fr)
+    minmax(600px, 1.5fr);
+
+    grid-template-areas:
+
+    "painel preview"
+
+    "painel editor";
 
     gap:35px;
 
-    width:min(96vw, 1600px);
+    width:95vw;
+
+    max-width:1900px;
 
     margin:auto;
 
     align-items:start;
 
 }
-
 
 
 /* =========================
@@ -622,29 +610,147 @@ button:hover{
 }
 
 
+/* =========================
+   EDITOR GRID 4 COLUNAS
+========================= */
+
+.editor-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4, minmax(160px,1fr));
+
+    gap:18px 20px;
+
+    margin-top:20px;
+
+}
+
+
+
+/* cada bloco */
+
+.editor-item{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+
+/* texto dos controles */
+
+.editor-item label{
+
+    margin-bottom:8px;
+
+    font-size:14px;
+
+    color:#ddd;
+
+}
+
+
+
+/* seletores */
+
+.editor-item input,
+.editor-item select{
+
+    width:100%;
+
+}
+
+
+
+/* arquivos ocupam espaço melhor */
+
+.editor-item input[type="file"]{
+
+    padding:10px;
+
+    font-size:12px;
+
+}
+
+
+
+/* sliders */
+
+.editor-item input[type="range"]{
+
+    margin-top:15px;
+
+}
 
 
 /* =========================
-   RESPONSIVO
+   RESPONSIVO EDITOR
 ========================= */
 
-@media (max-aspect-ratio: 1/1){
 
-    body{
+/* Notebook / telas médias */
 
-        padding:20px;
+@media(max-width:1200px){
+
+    .editor-grid{
+
+        grid-template-columns:repeat(2, 1fr);
 
     }
+
+}
+
+
+
+/* Celular */
+
+@media(max-width:600px){
+
+    .editor-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+
+
+/* =========================
+   RESPONSIVO LAYOUT
+========================= */
+
+
+/* Tablet / telas menores */
+
+@media(max-width:1000px){
 
     .layout{
 
         grid-template-columns:1fr;
 
+        grid-template-areas:
+
+        "painel"
+
+        "preview"
+
+        "editor";
+
         width:100%;
+
+        padding:0;
 
     }
 
-    .box{
+
+    .box,
+    .preview,
+    .editor-box{
 
         width:100%;
 
@@ -652,11 +758,55 @@ button:hover{
 
     }
 
+
     .preview{
 
-        width:100%;
-
         min-height:240px;
+
+    }
+
+}
+
+
+
+/* Celular */
+
+@media(max-width:600px){
+
+    body{
+
+        padding:15px;
+
+    }
+
+
+    .layout{
+
+        gap:20px;
+
+    }
+
+
+    .box,
+    .editor-box{
+
+        padding:20px;
+
+    }
+
+
+    .preview{
+
+        min-height:220px;
+
+        padding:15px;
+
+    }
+
+
+    #previewFrame{
+
+        transform:scale(.6);
 
     }
 
@@ -675,7 +825,7 @@ button:hover{
 <div class="layout">
 
 
-<div class="box">
+<div class="box" style="grid-area:painel;">
 
 
 
@@ -710,9 +860,6 @@ placeholder="Cole o link da live do YouTube"
 🚀 Iniciar Contador
 
 </button>
-
-
-
 
 <div id="status">
 
@@ -765,12 +912,10 @@ BREEZA FF • Like Counter
 </div>
 
 
-
 </div>
+<!-- FECHA BOX LIKE COUNTER -->
 
-
-
-<div class="preview">
+<div class="preview" style="grid-area:preview;">
 
 
 <h2>
@@ -785,6 +930,349 @@ src="overlay.html">
 
 
 </div>
+<!-- FECHA BOX Preview -->
+
+<!-- =========================
+     EDITOR DE OVERLAY
+========================= -->
+
+
+<div class="box editor-box" style="grid-area:editor;">
+
+<div class="editor">
+
+
+<h3>
+⚙ Personalização
+</h3>
+
+
+
+<div class="editor-grid">
+
+
+
+<!-- LIKE TEXTO -->
+
+<div class="editor-item">
+
+<label>
+🎨 Cor do Texto LIKE
+</label>
+
+<input
+type="color"
+id="likeColor"
+value="#00d8ff"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+✨ Neon Texto LIKE
+</label>
+
+<input
+type="color"
+id="likeTextGlow"
+value="#00eaff"
+>
+
+</div>
+
+
+
+
+
+<!-- LIKE PNG -->
+
+<div class="editor-item">
+
+<label>
+✨ Neon LIKE PNG Cor 1
+</label>
+
+<input
+type="color"
+id="likeGlow1"
+value="#00d8ff"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+✨ Neon LIKE PNG Cor 2
+</label>
+
+<input
+type="color"
+id="likeGlow2"
+value="#008cff"
+>
+
+</div>
+
+
+
+
+
+<!-- BARRA -->
+
+<div class="editor-item">
+
+<label>
+🌈 Cor da Barra
+</label>
+
+<input
+type="color"
+id="barraColor"
+value="#00eaff"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+✨ Neon Barra
+</label>
+
+<input
+type="color"
+id="barraGlow"
+value="#00eaff"
+>
+
+</div>
+
+
+
+
+
+<!-- PERFIL -->
+
+<div class="editor-item">
+
+<label>
+🌈 Borda Perfil
+</label>
+
+<input
+type="color"
+id="bordaColor"
+value="#00eaff"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+🎨 Fundo Card
+</label>
+
+<input
+type="color"
+id="fundoCard"
+value="#12151f"
+>
+
+</div>
+
+
+
+
+
+<!-- AVATAR NEON -->
+
+<div class="editor-item">
+
+<label>
+✨ Neon Perfil Cor 1
+</label>
+
+<input
+type="color"
+id="avatarGlow1"
+value="#00eaff"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+✨ Neon Perfil Cor 2
+</label>
+
+<input
+type="color"
+id="avatarGlow2"
+value="#006eff"
+>
+
+</div>
+
+
+
+
+
+<!-- CARD NEON -->
+
+<div class="editor-item">
+
+<label>
+✨ Neon Borda Card Cor 1
+</label>
+
+<input
+type="color"
+id="cardGlow1"
+value="#006eff"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+✨ Neon Borda Card Cor 2
+</label>
+
+<input
+type="color"
+id="cardGlow2"
+value="#0026ff"
+>
+
+</div>
+
+
+
+
+
+<!-- IMAGENS -->
+
+<div class="editor-item">
+
+<label>
+🖼️ Imagem do LIKE
+</label>
+
+<input
+type="file"
+id="likeImg"
+accept="image/png,image/jpeg"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+🖼️ Imagem do Avatar
+</label>
+
+<input
+type="file"
+id="avatarImg"
+accept="image/png,image/jpeg"
+>
+
+</div>
+
+
+
+
+
+<!-- TAMANHOS -->
+
+<div class="editor-item">
+
+<label>
+📏 Tamanho Avatar
+</label>
+
+<input
+type="range"
+id="avatarSize"
+min="40"
+max="150"
+value="85"
+>
+
+</div>
+
+
+
+<div class="editor-item">
+
+<label>
+📏 Tamanho Like
+</label>
+
+<input
+type="range"
+id="likeSize"
+min="30"
+max="120"
+value="75"
+>
+
+</div>
+
+
+
+</div>
+
+
+
+
+<button onclick="salvarConfig()">
+
+💾 Salvar
+
+</button>
+
+
+
+<button onclick="restaurarConfig()">
+
+🔄 Restaurar
+
+</button>
+
+
+
+</div>
+
+
+</div>
+<!-- fecha editor -->
+
+
+</div>
+<!-- fecha box editor -->
+
 
 
 </div>

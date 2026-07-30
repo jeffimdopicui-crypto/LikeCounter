@@ -126,6 +126,201 @@ window.CONTADOR_ID = contadorID;
 <script src="script.js"></script>
 
 
+<script>
+
+</script>
+
+<script>
+
+window.addEventListener(
+"message",
+function(event){
+
+
+    if(
+        !event.data ||
+        event.data.tipo !== "config" ||
+        !event.data.config
+    ){
+
+        return;
+
+    }
+
+
+    const config =
+    event.data.config;
+
+    console.log("CONFIG OVERLAY:", config);
+
+
+    const root =
+    document.documentElement;
+
+
+    root.style.setProperty(
+        "--like-color",
+        config.likeColor || "#00d8ff"
+    );
+
+
+    root.style.setProperty(
+        "--like-glow-1",
+        config.likeGlow1 || "#00d8ff"
+    );
+
+
+    root.style.setProperty(
+        "--like-glow-2",
+        config.likeGlow2 || "#008cff"
+    );
+
+
+    root.style.setProperty(
+        "--like-text-glow-1",
+        config.likeTextGlow1 || "#00d8ff"
+    );
+
+
+    root.style.setProperty(
+        "--like-text-glow-2",
+        config.likeTextGlow2 || "#008cff"
+    );
+
+
+    root.style.setProperty(
+        "--like-size",
+        (config.likeSize || 75) + "px"
+    );
+
+
+    root.style.setProperty(
+        "--avatar-size",
+        (config.avatarSize || 85) + "px"
+    );
+
+
+    root.style.setProperty(
+        "--borda-glow",
+        config.avatarGlow2 || "#006eff"
+    );
+
+
+    root.style.setProperty(
+        "--avatar-glow-1",
+        config.avatarGlow1 || "#00eaff"
+    );
+
+
+    root.style.setProperty(
+        "--avatar-glow-2",
+        config.avatarGlow2 || "#006eff"
+    );
+
+
+    root.style.setProperty(
+        "--card-glow-1",
+        config.cardGlow1 || "#006eff"
+    );
+
+
+    root.style.setProperty(
+        "--card-glow-2",
+        config.cardGlow2 || "#0026ff"
+    );
+
+
+    root.style.setProperty(
+        "--barra-color",
+        config.barraColor ||
+        "linear-gradient(90deg,#004cff,#008cff,#00eaff,#008cff,#004cff)"
+    );
+
+
+    root.style.setProperty(
+        "--barra-glow",
+        config.barraGlow || "#00eaff"
+    );
+
+
+    root.style.setProperty(
+        "--barra-glow-2",
+        config.barraGlow2 || "#006eff"
+    );
+
+    root.style.setProperty(
+        "--fundo-body",
+        config.fundoBody || "transparent"
+    );
+
+
+    root.style.setProperty(
+        "--fundo-overlay",
+        config.fundoOverlay ||
+        "linear-gradient(180deg,rgba(38,42,50,.98),rgba(12,14,19,.98))"
+    );
+
+
+    root.style.setProperty(
+        "--fundo-interno",
+        config.fundoInterno ||
+        "linear-gradient(135deg,rgba(20,24,40,.96),rgba(5,8,18,.95))"
+    );
+
+    root.style.setProperty(
+        "--fonte-overlay",
+        config.fonte || "Arial"
+    );
+
+
+    document.body.style.fontFamily =
+    config.fonte || "Arial";
+
+    const like = document.querySelector(".like");
+
+    if(config.likeImg){
+
+        like.src = config.likeImg;
+
+    }
+
+    const avatar = document.querySelector(".avatar");
+
+    if(config.avatarImg){
+
+        avatar.src = config.avatarImg;
+
+    }
+
+
+});
+
+
+
+// ==============================
+// AVISA O PAINEL QUE O PREVIEW CARREGOU
+// ==============================
+
+window.addEventListener(
+"load",
+function(){
+
+
+    window.parent.postMessage({
+
+        tipo:"ready"
+
+    },"*");
+
+
+});
+
+
+
+
+</script>
+
+
 </body>
 
 </html>
