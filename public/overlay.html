@@ -132,30 +132,83 @@ window.CONTADOR_ID = contadorID;
 
 <script>
 
-window.addEventListener(
-"message",
-function(event){
+// ==============================
+// CARREGAR CONFIG DO SERVIDOR
+// ==============================
+
+async function carregarConfigServidor(){
+
+    const id =
+    new URLSearchParams(
+        window.location.search
+    ).get("id");
 
 
-    if(
-        !event.data ||
-        event.data.tipo !== "config" ||
-        !event.data.config
-    ){
+    if(!id){
 
         return;
 
     }
 
 
-    const config =
-    event.data.config;
+    try{
 
-    console.log("CONFIG OVERLAY:", config);
+
+        const resposta =
+        await fetch(
+            "/config/" + id
+        );
+
+
+        const dados =
+        await resposta.json();
+
+
+
+        if(dados.config){
+
+
+            aplicarConfig(
+                dados.config
+            );
+
+
+        }
+
+
+    }catch(e){
+
+        console.log(
+            "Erro buscando config:",
+            e
+        );
+
+    }
+
+}
+
+
+
+
+function aplicarConfig(config){
+
+
+    if(!config){
+
+        return;
+
+    }
+
+
+    console.log(
+        "CONFIG OVERLAY:",
+        config
+    );
 
 
     const root =
     document.documentElement;
+
 
 
     root.style.setProperty(
@@ -248,6 +301,7 @@ function(event){
         config.barraGlow2 || "#006eff"
     );
 
+
     root.style.setProperty(
         "--fundo-body",
         config.fundoBody || "transparent"
@@ -267,6 +321,7 @@ function(event){
         "linear-gradient(135deg,rgba(20,24,40,.96),rgba(5,8,18,.95))"
     );
 
+
     root.style.setProperty(
         "--fonte-overlay",
         config.fonte || "Arial"
@@ -276,24 +331,64 @@ function(event){
     document.body.style.fontFamily =
     config.fonte || "Arial";
 
-    const like = document.querySelector(".like");
 
-    if(config.likeImg){
 
-        like.src = config.likeImg;
+    const like =
+    document.querySelector(".like");
+
+
+    if(config.likeImg && like){
+
+        like.src =
+        config.likeImg;
+
+    }
+
+
+
+    const avatar =
+    document.querySelector(".avatar");
+
+
+    if(config.avatarImg && avatar){
+
+        avatar.src =
+        config.avatarImg;
 
     }
 
-    const avatar = document.querySelector(".avatar");
 
-    if(config.avatarImg){
+}
 
-        avatar.src = config.avatarImg;
+
+
+// ==============================
+// RECEBE CONFIG DO PREVIEW
+// ==============================
+
+window.addEventListener(
+"message",
+function(event){
+
+
+    if(
+        !event.data ||
+        event.data.tipo !== "config" ||
+        !event.data.config
+    ){
+
+        return;
 
     }
+
+
+    aplicarConfig(
+        event.data.config
+    );
 
 
 });
+
 
 
 
@@ -313,14 +408,7 @@ function(){
     },"*");
 
 
+    carregarConfigServidor();
+
+
 });
-
-
-
-
-</script>
-
-
-</body>
-
-</html>

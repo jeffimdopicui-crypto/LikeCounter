@@ -424,21 +424,86 @@ function atualizarOverlay(){
 // ==============================
 
 
-function salvarConfig(){
+async function salvarConfig(){
+
+
+    const id =
+    new URLSearchParams(
+        window.location.search
+    ).get("id");
+
+
+
+    if(!id){
+
+        alert(
+            "ID do contador não encontrado"
+        );
+
+        return;
+
+    }
+
+
+
+    const resposta =
+    await fetch(
+        "/salvar-config",
+        {
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":
+                "application/json"
+
+            },
+
+
+            body:JSON.stringify({
+
+                id:id,
+
+                config:overlayConfig
+
+            })
+
+
+        }
+    );
+
+
+
+    const dados =
+    await resposta.json();
+
+
+
+    console.log(
+        "CONFIG SALVA:",
+        dados
+    );
+
+
 
     localStorage.setItem(
         "overlayConfig",
-        JSON.stringify(overlayConfig)
+        JSON.stringify(
+            overlayConfig
+        )
     );
+
 
 
     atualizarOverlay();
 
 
-    console.log(
-        "Configuração salva",
-        overlayConfig
+
+    alert(
+        "✅ Overlay salva no servidor!"
     );
+
 
 }
 
