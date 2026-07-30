@@ -349,11 +349,49 @@ async function atualizar(){
 
 
 
+// =================================
+// PEGA ID PELO HASH DA URL
+// =================================
+
+function carregarIDHash(){
+
+
+    const hash =
+    window.location.hash;
+
+
+    if(hash.includes("id=")){
+
+
+        const params =
+        new URLSearchParams(
+            hash.substring(1)
+        );
+
+
+        window.CONTADOR_ID =
+        params.get("id");
+
+
+        console.log(
+            "ID PELO HASH:",
+            window.CONTADOR_ID
+        );
+
+
+    }
+
+
+}
+
 
 
 // =================================
 // INICIALIZA
 // =================================
+
+carregarIDHash();
+
 
 atualizar();
 

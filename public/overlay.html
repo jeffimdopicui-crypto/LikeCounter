@@ -106,17 +106,129 @@
 <script>
 
 
-// pega o ID único criado pelo servidor
+// =================================
+// PEGA ID DO CONTADOR
+// ACEITA:
+// /overlay.html?id=123
+// OU
+// /#id=123
+// =================================
 
-const contadorID =
+
+let contadorID =
+
 new URLSearchParams(
     window.location.search
 ).get("id");
 
 
+
+// se não veio pelo ?id
+// tenta pegar pelo hash
+
+
+if(!contadorID){
+
+
+    contadorID =
+
+    new URLSearchParams(
+
+        window.location.hash.substring(1)
+
+    ).get("id");
+
+
+}
+
+
 // salva global para o script.js usar
 
 window.CONTADOR_ID = contadorID;
+
+
+
+console.log(
+    "ID CONTADOR:",
+    window.CONTADOR_ID
+);
+
+
+
+// =================================
+// CARREGA ARTE SALVA DO SERVIDOR
+// =================================
+
+async function carregarArte(){
+
+
+    if(!window.CONTADOR_ID){
+
+        return;
+
+    }
+
+
+    try{
+
+
+        const resposta = await fetch(
+
+            "/config/" +
+
+            window.CONTADOR_ID +
+
+            "?cache=" +
+
+            Date.now()
+
+        );
+
+
+
+        const config =
+        await resposta.json();
+
+
+
+        if(config){
+
+
+            console.log(
+                "ARTE CARREGADA:",
+                config
+            );
+
+
+        }
+
+
+
+    }catch(e){
+
+
+        console.log(
+            "Erro carregando arte:",
+            e
+        );
+
+
+    }
+
+
+}
+
+
+
+window.addEventListener(
+"DOMContentLoaded",
+function(){
+
+
+    carregarArte();
+
+
+});
 
 
 </script>
@@ -132,65 +244,7 @@ window.CONTADOR_ID = contadorID;
 
 <script>
 
-// ==============================
-// CARREGAR CONFIG DO SERVIDOR
-// ==============================
-
-async function carregarConfigServidor(){
-
-    const id =
-    new URLSearchParams(
-        window.location.search
-    ).get("id");
-
-
-    if(!id){
-
-        return;
-
-    }
-
-
-    try{
-
-
-        const resposta =
-        await fetch(
-            "/config/" + id
-        );
-
-
-        const dados =
-        await resposta.json();
-
-
-
-        if(dados.config){
-
-
-            aplicarConfig(
-                dados.config
-            );
-
-
-        }
-
-
-    }catch(e){
-
-        console.log(
-            "Erro buscando config:",
-            e
-        );
-
-    }
-
-}
-
-
-
-
-function aplicarConfig(config){
+function aplicarArte(config){
 
 
     if(!config){
@@ -201,14 +255,15 @@ function aplicarConfig(config){
 
 
     console.log(
-        "CONFIG OVERLAY:",
+        "APLICANDO ARTE:",
         config
     );
+
+    console.log("CONFIG OVERLAY:", config);
 
 
     const root =
     document.documentElement;
-
 
 
     root.style.setProperty(
@@ -301,7 +356,6 @@ function aplicarConfig(config){
         config.barraGlow2 || "#006eff"
     );
 
-
     root.style.setProperty(
         "--fundo-body",
         config.fundoBody || "transparent"
@@ -321,7 +375,6 @@ function aplicarConfig(config){
         "linear-gradient(135deg,rgba(20,24,40,.96),rgba(5,8,18,.95))"
     );
 
-
     root.style.setProperty(
         "--fonte-overlay",
         config.fonte || "Arial"
@@ -331,29 +384,97 @@ function aplicarConfig(config){
     document.body.style.fontFamily =
     config.fonte || "Arial";
 
+    const like = document.querySelector(".like");
 
+    if(config.likeImg){
 
-    const like =
-    document.querySelector(".like");
+        like.src = config.likeImg;
 
+    }
 
-    if(config.likeImg && like){
+    const avatar = document.querySelector(".avatar");
 
-        like.src =
-        config.likeImg;
+    if(config.avatarImg){
+
+        avatar.src = config.avatarImg;
 
     }
 
 
-
-    const avatar =
-    document.querySelector(".avatar");
+}
 
 
-    if(config.avatarImg && avatar){
+window.addEventListener(
+"message",
+function(event){
 
-        avatar.src =
-        config.avatarImg;
+
+    if(
+        event.data &&
+        event.data.tipo === "config"
+    ){
+
+        aplicarArte(
+            event.data.config
+        );
+
+    }
+
+
+});
+
+
+
+// ==============================
+// CARREGA ARTE SALVA
+// ==============================
+
+async function carregarArteServidor(){
+
+
+    if(!window.CONTADOR_ID){
+
+        return;
+
+    }
+
+
+    try{
+
+
+        const resposta =
+        await fetch(
+
+            "/config/" +
+            window.CONTADOR_ID +
+            "?cache=" +
+            Date.now()
+
+        );
+
+
+
+        const config =
+        await resposta.json();
+
+
+
+        if(config){
+
+            aplicarArte(config);
+
+        }
+
+
+
+    }catch(e){
+
+
+        console.log(
+            "Erro carregando arte:",
+            e
+        );
+
 
     }
 
@@ -362,34 +483,13 @@ function aplicarConfig(config){
 
 
 
-// ==============================
-// RECEBE CONFIG DO PREVIEW
-// ==============================
-
 window.addEventListener(
-"message",
-function(event){
+"load",
+function(){
 
-
-    if(
-        !event.data ||
-        event.data.tipo !== "config" ||
-        !event.data.config
-    ){
-
-        return;
-
-    }
-
-
-    aplicarConfig(
-        event.data.config
-    );
-
+    carregarArteServidor();
 
 });
-
-
 
 
 // ==============================
@@ -408,7 +508,14 @@ function(){
     },"*");
 
 
-    carregarConfigServidor();
-
-
 });
+
+
+
+
+</script>
+
+
+</body>
+
+</html>

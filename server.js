@@ -2,6 +2,7 @@ const express = require("express");
 const youtube = require("./youtube");
 const goals = require("./goals");
 const path = require("path");
+const fs = require("fs");
 
 require("dotenv").config();
 
@@ -37,6 +38,115 @@ app.get("/",(req,res)=>{
 });
 
 
+// ===============================
+// LIMPEZA AUTOMÁTICA DE CONFIGS
+// REMOVE ARQUIVOS COM MAIS DE 20 HORAS
+// ===============================
+
+function limparConfigsAntigos(){
+
+
+    const pasta =
+    path.join(
+        __dirname,
+        "configs"
+    );
+
+
+    if(!fs.existsSync(pasta)){
+
+        return;
+
+    }
+
+
+
+    const agora =
+    Date.now();
+
+
+
+    const limite =
+    20 * 60 * 60 * 1000; // 20 horas
+
+
+
+    fs.readdirSync(pasta)
+    .forEach(arquivo=>{
+
+
+        if(!arquivo.endsWith(".json")){
+
+            return;
+
+        }
+
+
+
+        const caminho =
+        path.join(
+            pasta,
+            arquivo
+        );
+
+
+
+        let stats;
+
+        try{
+
+            stats =
+            fs.statSync(
+                caminho
+            );
+
+        }catch(e){
+
+            return;
+
+        }
+
+
+
+        const idade =
+        agora - stats.mtimeMs;
+
+
+
+        if(idade > limite){
+
+
+            fs.unlinkSync(
+                caminho
+            );
+
+
+            console.log(
+                "Config removida por expiração:",
+                arquivo
+            );
+
+
+        }
+
+
+    });
+
+
+}
+
+
+// executa ao iniciar
+
+limparConfigsAntigos();
+
+
+// verifica a cada 1 hora
+
+setInterval(
+    limparConfigsAntigos,
+    60 * 60 * 1000
+);
 
 
 // ===============================
@@ -67,8 +177,6 @@ const contadores = {};
 
 
 
-
-
 // ===============================
 // EXTRAI ID YOUTUBE
 // ===============================
@@ -87,9 +195,6 @@ function extrairVideoId(url){
     return match ? match[1] : null;
 
 }
-
-
-
 
 
 
@@ -449,7 +554,91 @@ app.post("/fechar/:id",(req,res)=>{
 
 
 
+// ===============================
+// SALVAR CONFIG DA OVERLAY
+// ===============================
 
+app.post("/config/:id",(req,res)=>{
+
+    const pasta =
+    path.join(__dirname,"configs");
+
+    if(!fs.existsSync(pasta)){
+
+        fs.mkdirSync(pasta);
+
+    }
+
+    fs.writeFileSync(
+
+        path.join(
+            pasta,
+            req.params.id + ".json"
+        ),
+
+        JSON.stringify(
+            req.body,
+            null,
+            4
+        )
+
+    );
+
+    res.json({
+
+        ok:true
+
+    });
+
+});
+
+
+
+
+// ===============================
+// CARREGAR CONFIG DA OVERLAY
+// ===============================
+
+app.get("/config/:id",(req,res)=>{
+
+    const arquivo =
+    path.join(
+
+        __dirname,
+
+        "configs",
+
+        req.params.id + ".json"
+
+    );
+
+
+
+    if(!fs.existsSync(arquivo)){
+
+        return res.json(null);
+
+    }
+
+
+
+    res.json(
+
+        JSON.parse(
+
+            fs.readFileSync(
+
+                arquivo,
+
+                "utf8"
+
+            )
+
+        )
+
+    );
+
+});
 
 
 

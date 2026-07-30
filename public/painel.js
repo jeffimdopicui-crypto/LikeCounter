@@ -50,14 +50,69 @@ async function iniciar(){
     );
 
 
+
     if(dados.ok){
 
+
+        // ==============================
+        // ALTERA A ROTA DO SITE
+        // ==============================
+
+        window.location.hash =
+        "id=" + dados.id;
+
+
+
+        // ==============================
+        // SALVA ID GLOBAL
+        // ==============================
+
+        window.CONTADOR_ID =
+        dados.id;
+
+
+        // ==============================
+        // ATUALIZA PREVIEW
+        // ==============================
+
+        const frame =
+        document.getElementById(
+            "previewFrame"
+        );
+
+
+        if(frame){
+
+
+            frame.src =
+            "/overlay.html?id=" + dados.id;
+
+
+
+            frame.onload=function(){
+
+
+                atualizarOverlay();
+
+
+            };
+
+
+        }
+
+
+
+
         const overlayURL =
-        dados.overlay;
+        window.location.origin +
+        "/overlay.html?id=" +
+        dados.id;
+
 
 
         document.getElementById("status")
         .innerHTML =
+
 
         `
 
@@ -123,6 +178,7 @@ async function iniciar(){
         >
 
 
+
         <button
 
         onclick="copiarOverlay()"
@@ -137,6 +193,7 @@ async function iniciar(){
 
 
         `;
+
 
 
     }else{
@@ -156,6 +213,69 @@ async function iniciar(){
 
 
     }
+
+
+}
+
+// ==============================
+// CARREGA CONTADOR PELA ROTA
+// ==============================
+
+function carregarContadorPorRota(){
+
+
+    const hash =
+    window.location.hash;
+
+
+
+    if(!hash.startsWith("#id=")){
+
+        return;
+
+    }
+
+
+
+    const id =
+    hash.replace("#id=","");
+
+
+
+    console.log(
+        "CONTADOR PELA ROTA:",
+        id
+    );
+
+
+
+    // salva globalmente
+
+    window.CONTADOR_ID = id;
+
+
+
+    const frame =
+    document.getElementById(
+        "previewFrame"
+    );
+
+
+
+    if(frame){
+
+        frame.src =
+        "/overlay.html?id=" + id;
+
+
+        frame.onload = function(){
+
+            atualizarOverlay();
+
+        };
+
+    }
+
 
 
 }
@@ -427,83 +547,64 @@ function atualizarOverlay(){
 async function salvarConfig(){
 
 
-    const id =
-    new URLSearchParams(
-        window.location.search
-    ).get("id");
+    if(window.CONTADOR_ID){
 
+        try{
 
+            await fetch(
 
-    if(!id){
+                "/config/" +
 
-        alert(
-            "ID do contador não encontrado"
-        );
+                window.CONTADOR_ID,
 
-        return;
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":"application/json"
+
+                    },
+
+                    body:JSON.stringify(
+                        overlayConfig
+                    )
+
+                }
+
+            );
+
+            console.log(
+                "Configuração salva no servidor"
+            );
+
+        }catch(e){
+
+            console.log(
+                "Erro ao salvar:",
+                e
+            );
+
+        }
 
     }
 
 
 
-    const resposta =
-    await fetch(
-        "/salvar-config",
-        {
-
-            method:"POST",
-
-            headers:{
-
-                "Content-Type":
-                "application/json"
-
-            },
-
-
-            body:JSON.stringify({
-
-                id:id,
-
-                config:overlayConfig
-
-            })
-
-
-        }
-    );
-
-
-
-    const dados =
-    await resposta.json();
-
-
-
-    console.log(
-        "CONFIG SALVA:",
-        dados
-    );
-
-
-
     localStorage.setItem(
+
         "overlayConfig",
+
         JSON.stringify(
             overlayConfig
         )
+
     );
 
 
 
     atualizarOverlay();
-
-
-
-    alert(
-        "✅ Overlay salva no servidor!"
-    );
-
 
 }
 
@@ -514,29 +615,94 @@ async function salvarConfig(){
 // ==============================
 
 
-function carregarConfig(){
+async function carregarConfig(){
 
 
-    const salvo =
-    localStorage.getItem(
-        "overlayConfig"
-    );
+    // ==============================
+    // CARREGA DO SERVIDOR
+    // ==============================
+
+    if(window.CONTADOR_ID){
+
+        try{
+
+            const resposta =
+
+            await fetch(
+
+                "/config/" +
+
+                window.CONTADOR_ID +
+
+                "?cache=" +
+
+                Date.now()
+
+            );
 
 
-    if(salvo){
+
+            const configServidor =
+
+            await resposta.json();
 
 
-        overlayConfig =
-        {
 
-            ...overlayConfig,
+            if(configServidor){
 
-            ...JSON.parse(
-                salvo
-            )
+                overlayConfig = {
 
-        };
+                    ...overlayConfig,
 
+                    ...configServidor
+
+                };
+
+            }
+
+        }catch(e){
+
+            console.log(
+
+                "Erro carregando config:",
+
+                e
+
+            );
+
+        }
+
+    }
+
+
+
+    // ==============================
+    // FALLBACK LOCAL
+    // ==============================
+
+    else{
+
+        const salvo =
+
+        localStorage.getItem(
+
+            "overlayConfig"
+
+        );
+
+
+
+        if(salvo){
+
+            overlayConfig = {
+
+                ...overlayConfig,
+
+                ...JSON.parse(salvo)
+
+            };
+
+        }
 
     }
 
@@ -1411,13 +1577,20 @@ function aplicarPreviewInicial(){
 
 window.addEventListener(
 "load",
-function(){
+async function(){
 
-    carregarConfig();
+    // primeiro descobre qual é o ID da live
+    carregarContadorPorRota();
 
-    setTimeout(
-        aplicarPreviewInicial,
-        500
-    );
+    // agora já existe window.CONTADOR_ID
+    await carregarConfig();
+
+    setTimeout(()=>{
+
+        aplicarPreviewInicial();
+
+        atualizarOverlay();
+
+    },500);
 
 });
