@@ -227,16 +227,10 @@ app.post("/video", async(req,res)=>{
 
 
 
-    // O ID DO CONTADOR É A PRÓPRIA LIVE
-
     const contadorId = videoId;
 
 
 
-
-    // ===================================
-    // NÃO SOBRESCREVE CONTADOR EXISTENTE
-    // ===================================
 
     if(!contadores[contadorId]){
 
@@ -247,6 +241,9 @@ app.post("/video", async(req,res)=>{
             videoId,
 
 
+            atualizando:false,
+
+
             dados:{
 
 
@@ -255,8 +252,6 @@ app.post("/video", async(req,res)=>{
                 id:videoId,
 
                 titulo:"",
-
-                thumb:"",
 
                 likes:0,
 
@@ -294,27 +289,32 @@ app.post("/video", async(req,res)=>{
 
 
 
+    // carrega dados iniciais + inicia contador
+    await iniciarContador(contadorId);
 
 
 
-    await atualizarDados(contadorId);
-
-
-
-
-
+    // responde para o painel
     res.json({
 
-        ok: true,
 
-        video: videoId,
+        ok:true,
 
-        titulo: contadores[contadorId].dados.titulo,
 
-        id: contadorId,
+        video:videoId,
+
+
+        titulo:
+        contadores[contadorId].dados.titulo,
+
+
+        id:
+        contadorId,
+
 
         overlay:
-            `${req.protocol}://${req.get("host")}/overlay.html?id=${contadorId}`
+        `${req.protocol}://${req.get("host")}/overlay.html?id=${contadorId}`
+
 
     });
 
@@ -323,13 +323,12 @@ app.post("/video", async(req,res)=>{
 });
 
 
+// ===============================
+// INICIA CONTADOR
+// BUSCA DADOS COMPLETOS 1 VEZ
+// ===============================
 
-
-
-
-
-
-async function atualizarDados(contadorId){
+async function iniciarContador(contadorId){
 
 
     const contador =
@@ -337,7 +336,6 @@ async function atualizarDados(contadorId){
 
 
     if(!contador)
-
         return;
 
 
@@ -351,18 +349,91 @@ async function atualizarDados(contadorId){
         );
 
 
+        if(dados){
 
-        if(!dados){
 
-            console.log(
-                "YouTube não retornou dados:",
-                contadorId
-            );
+            contador.dados = {
 
-            return;
+
+                ...contador.dados,
+
+                ...dados
+
+
+            };
+
 
         }
 
+
+
+        contador.dados.online = true;
+
+
+
+        // atualiza likes logo no início
+
+        await atualizarLikes(contadorId);
+
+
+
+        console.log(
+
+            "CONTADOR INICIADO:",
+            contadorId,
+
+            "| TITULO:",
+            contador.dados.titulo,
+
+            "| LIKES:",
+            contador.dados.likes
+
+        );
+
+
+
+
+    }catch(e){
+
+
+        console.log(
+
+            "Erro iniciar contador:",
+            e.message
+
+        );
+
+
+    }
+
+
+}
+
+
+async function atualizarLikes(contadorId){
+
+
+    const contador =
+    contadores[contadorId];
+
+
+    if(!contador)
+        return;
+
+
+
+    try{
+
+
+        const dados =
+        await youtube.buscarLikes(
+            contador.videoId
+        );
+
+
+
+        if(!dados)
+            return;
 
 
 
@@ -381,42 +452,28 @@ async function atualizarDados(contadorId){
 
 
 
-
-
-        contador.dados={
-
+        contador.dados = {
 
             ...contador.dados,
 
-            ...dados,
-
-
-            online:true,
-
+            likes:
+            dados.likes,
 
             meta,
 
+            progresso,
 
-            progresso
-
+            online:true
 
         };
 
 
 
-
-
         console.log(
-
             "CONTADOR:",
             contadorId,
-
-            "| TITULO:",
-            dados.titulo,
-
             "| LIKES:",
             dados.likes
-
         );
 
 
@@ -425,7 +482,7 @@ async function atualizarDados(contadorId){
 
 
         console.log(
-            "Erro atualizar contador:",
+            "Erro atualizar likes:",
             e.message
         );
 
@@ -437,29 +494,20 @@ async function atualizarDados(contadorId){
 
 
 
-
-
-
-
-
 // ===============================
 // ATUALIZA TODOS OS CONTADORES
 // ===============================
 
 setInterval(()=>{
 
-
     Object.keys(contadores)
     .forEach(id=>{
 
-
-        atualizarDados(id);
-
+        atualizarLikes(id);
 
     });
 
-
-},7000);
+},10000);
 
 
 

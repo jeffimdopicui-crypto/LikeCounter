@@ -1,8 +1,26 @@
 const axios = require("axios");
+
 require("dotenv").config();
 
 
-const API_KEY = process.env.YOUTUBE_API_KEY;
+// =================================
+// CLIENTE HTTP LEVE
+// =================================
+
+const youtubeAPI = axios.create({
+
+    baseURL:
+    "https://www.googleapis.com/youtube/v3",
+
+    timeout:5000
+
+});
+
+
+
+const API_KEY =
+process.env.YOUTUBE_API_KEY;
+
 
 
 if(!API_KEY){
@@ -15,49 +33,65 @@ if(!API_KEY){
 
 
 
+
 // =================================
-// PEGA DADOS COMPLETOS (SÓ NO INÍCIO)
+// BUSCA DADOS INICIAIS
+// USA SOMENTE AO CRIAR CONTADOR
 // =================================
 
 async function buscarDados(videoId){
 
 
+    if(!API_KEY)
+        return null;
+
+
+
     try{
 
 
-        const {data} = await axios.get(
+        const resposta =
+        await youtubeAPI.get("/videos",{
 
-            "https://www.googleapis.com/youtube/v3/videos",
 
-            {
+            params:{
 
-                params:{
 
-                    part:
-                    "snippet,statistics",
+                part:
+                "snippet,statistics",
 
-                    id:
-                    videoId,
 
-                    key:
-                    API_KEY
+                id:
+                videoId,
 
-                }
+
+                key:
+                API_KEY
+
 
             }
 
-        );
 
-
-
-        if(!data.items || data.items.length === 0)
-
-            return null;
+        });
 
 
 
         const video =
-        data.items[0];
+        resposta.data.items?.[0];
+
+
+
+        if(!video){
+
+            console.log(
+                "Vídeo não encontrado:",
+                videoId
+            );
+
+            return null;
+
+        }
+
 
 
 
@@ -69,12 +103,12 @@ async function buscarDados(videoId){
 
 
             titulo:
-            video.snippet.title,
+            video.snippet?.title || "",
 
 
             likes:
             Number(
-                video.statistics.likeCount || 0
+                video.statistics?.likeCount || 0
             )
 
 
@@ -86,7 +120,7 @@ async function buscarDados(videoId){
 
 
         console.log(
-            "Erro YouTube API:",
+            "Erro dados YouTube:",
             e.response?.data || e.message
         );
 
@@ -103,65 +137,93 @@ async function buscarDados(videoId){
 
 
 
+
+
+
 // =================================
-// ATUALIZA SOMENTE LIKES
+// ATUALIZA APENAS LIKE
+// CHAMAR A CADA 10 SEGUNDOS
 // =================================
 
 async function buscarLikes(videoId){
 
 
+    if(!API_KEY)
+        return null;
+
+
+
     try{
 
 
-        const {data} = await axios.get(
+        const resposta =
+        await youtubeAPI.get("/videos",{
 
-            "https://www.googleapis.com/youtube/v3/videos",
 
-            {
+            params:{
 
-                params:{
 
-                    part:"statistics",
+                part:
+                "statistics",
 
-                    id:videoId,
 
-                    key:API_KEY
+                id:
+                videoId,
 
-                }
+
+                key:
+                API_KEY
+
 
             }
 
-        );
 
-
-
-        if(!data.items || data.items.length === 0)
-
-            return null;
+        });
 
 
 
         const video =
-        data.items[0];
+        resposta.data.items?.[0];
+
+
+
+        if(!video){
+
+
+            console.log(
+                "Nenhum vídeo retornado:",
+                videoId
+            );
+
+
+            return null;
+
+        }
 
 
 
         return {
 
+
             likes:
             Number(
-                video.statistics.likeCount || 0
+                video.statistics?.likeCount || 0
             )
 
+
         };
+
 
 
     }catch(e){
 
 
         console.log(
+
             "Erro buscando likes:",
+
             e.response?.data || e.message
+
         );
 
 
@@ -172,6 +234,8 @@ async function buscarLikes(videoId){
 
 
 }
+
+
 
 
 
@@ -180,6 +244,7 @@ module.exports = {
 
 
     buscarDados,
+
 
     buscarLikes
 
