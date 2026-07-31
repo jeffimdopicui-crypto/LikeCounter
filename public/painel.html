@@ -86,90 +86,6 @@ body{
 
 
 
-/* luz passando no card */
-
-
-.box::before{
-
-
-    content:"";
-
-
-    position:absolute;
-
-
-    top:0;
-
-
-    left:-100%;
-
-
-    width:70%;
-
-
-    height:100%;
-
-
-
-    background:
-
-
-    linear-gradient(
-
-        120deg,
-
-        transparent,
-
-        rgba(255,255,255,.15),
-
-        transparent
-
-    );
-
-
-
-    animation:
-
-
-    brilho 5s infinite;
-
-
-
-}
-
-
-
-
-@keyframes brilho{
-
-
-    0%{
-
-        left:-100%;
-
-    }
-
-
-    50%{
-
-        left:130%;
-
-    }
-
-
-    100%{
-
-        left:130%;
-
-    }
-
-
-}
-
-
-
-
-
 h2{
 
 
@@ -441,61 +357,256 @@ button:hover{
 
 
 
+/* =========================
+   BOX OBS
+========================= */
+
 .obs{
 
+    margin-top:25px;
 
-    margin-top:20px;
+    padding:22px;
 
-
-    padding:15px;
-
-
-    border-radius:12px;
-
-
+    border-radius:16px;
 
     background:
+    linear-gradient(
+        145deg,
+        rgba(0,234,255,.08),
+        rgba(0,110,255,.04)
+    );
 
+    border:1px solid rgba(0,234,255,.20);
 
-    rgba(0,150,255,.08);
+}
 
+.obs h3{
 
+    margin:0 0 18px;
 
-    border-left:
+    text-align:center;
 
+    color:#00eaff;
 
-    3px solid #00eaff;
+    font-size:18px;
 
+    letter-spacing:.5px;
 
+}
 
-    font-size:14px;
+.obs-step{
 
+    display:flex;
 
+    align-items:flex-start;
+
+    gap:14px;
+
+    padding:12px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    color:#ddd;
+
+    line-height:1.6;
+
+    font-size:15px;
+
+}
+
+.obs-step:last-child{
+
+    border-bottom:none;
+
+}
+
+.obs-step span{
+
+    width:30px;
+
+    height:30px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-shrink:0;
+
+    font-weight:bold;
+
+    color:#fff;
+
+    background:
+    linear-gradient(
+        135deg,
+        #00eaff,
+        #006eff
+    );
+
+    box-shadow:
+    0 0 15px rgba(0,234,255,.45);
+
+}
+
+.obs b{
+
+    color:#fff;
+
+}
+
+.editor-aviso{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:14px;
+
+    margin:18px 0 28px;
+
+    padding:16px;
+
+    border-radius:14px;
+
+    background:rgba(0,234,255,.08);
+
+    border-left:4px solid #00eaff;
+
+    color:#fff;
+
+    line-height:1.6;
+
+}
+
+.editor-aviso .icone{
+
+    font-size:24px;
+
+    flex-shrink:0;
 
 }
 
 
 
 
-
-
 .logo{
-
 
     margin-top:25px;
 
-
     text-align:center;
-
 
     color:#777;
 
-
     font-size:13px;
-
 
     letter-spacing:1px;
 
+}
+
+/* =========================
+   TÍTULOS COM ÍCONE
+========================= */
+
+.titulo-principal{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+}
+
+.titulo-icon{
+
+    width:34px;
+
+    height:34px;
+
+    object-fit:contain;
+
+    filter:
+        drop-shadow(0 0 10px #00eaff);
+
+}
+
+.obs-title{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.obs-logo{
+
+    width:28px;
+
+    height:28px;
+
+    object-fit:contain;
+
+}
+
+/* =========================
+   BOTÃO YOUTUBE
+========================= */
+
+.youtube-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:15px;
+
+    padding:12px 22px;
+
+    background:#ffffff;
+
+    color:#ff0000;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    border-radius:12px;
+
+    transition:.25s;
+
+    box-shadow:
+    0 5px 20px rgba(0,0,0,.25);
+
+}
+
+.youtube-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 8px 30px rgba(255,0,0,.35);
+
+}
+
+.youtube-btn img{
+
+    width:24px;
+
+    height:24px;
 
 }
 
@@ -611,24 +722,26 @@ button:hover{
 
 
 /* =========================
-   EDITOR GRID 4 COLUNAS
+   EDITOR GRID
 ========================= */
 
 .editor-grid{
 
     display:grid;
 
-    grid-template-columns:repeat(4, minmax(160px,1fr));
+    grid-template-columns:repeat(4,minmax(160px,1fr));
 
-    gap:18px 20px;
+    gap:10px 12px;
 
-    margin-top:20px;
+    margin-top:25px;
 
 }
 
 
 
-/* cada bloco */
+/* =========================
+   CARD DE CADA OPÇÃO
+========================= */
 
 .editor-item{
 
@@ -636,25 +749,69 @@ button:hover{
 
     flex-direction:column;
 
+    padding:-7px;
+
+    border-radius:8px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(255,255,255,.03),
+        rgba(255,255,255,.015)
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    transition:
+        transform .25s,
+        box-shadow .25s,
+        border-color .25s;
+
+}
+
+.editor-item:hover{
+
+    transform:translateY(-3px);
+
+    border-color:rgba(0,234,255,.45);
+
+    box-shadow:
+
+        0 0 18px rgba(0,234,255,.18);
+
 }
 
 
 
-/* texto dos controles */
+/* =========================
+   TÍTULOS
+========================= */
 
 .editor-item label{
 
-    margin-bottom:8px;
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:-5px;
+
+    color:#f4f4f4;
 
     font-size:14px;
 
-    color:#ddd;
+    font-weight:600;
+
+    line-height:1.4;
 
 }
 
 
 
-/* seletores */
+/* =========================
+   INPUTS
+========================= */
 
 .editor-item input,
 .editor-item select{
@@ -665,47 +822,81 @@ button:hover{
 
 
 
-/* arquivos ocupam espaço melhor */
+/* =========================
+   COLOR PICKER
+========================= */
+
+.editor-item input[type="color"]{
+
+    width:100%;
+
+    height:30px;
+
+    padding:4px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#101522;
+
+    cursor:pointer;
+
+}
+
+
+
+/* =========================
+   UPLOAD
+========================= */
 
 .editor-item input[type="file"]{
 
-    padding:10px;
+    padding:8px;
 
     font-size:12px;
 
+    border-radius:12px;
+
+    background:#101522;
+
+    border:1px dashed rgba(0,234,255,.25);
+
+    cursor:pointer;
+
 }
 
 
 
-/* sliders */
+/* =========================
+   SLIDER
+========================= */
 
 .editor-item input[type="range"]{
 
-    margin-top:15px;
+    margin-top:8px;
+
+    cursor:pointer;
+
+    accent-color:#00eaff;
 
 }
+
 
 
 /* =========================
    RESPONSIVO EDITOR
 ========================= */
 
-
-/* Notebook / telas médias */
-
 @media(max-width:1200px){
 
     .editor-grid{
 
-        grid-template-columns:repeat(2, 1fr);
+        grid-template-columns:repeat(2,1fr);
 
     }
 
 }
-
-
-
-/* Celular */
 
 @media(max-width:600px){
 
@@ -812,6 +1003,253 @@ button:hover{
 
 }
 
+/* =========================
+   BANNER DE NOTIFICAÇÃO
+========================= */
+
+#bannerAviso{
+
+    position:fixed;
+
+    top:20px;
+
+    left:50%;
+
+    transform:translateX(-50%) translateY(-120px);
+
+    min-width:420px;
+
+    max-width:700px;
+
+    padding:18px 30px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(25,35,60,.98),
+        rgba(5,8,18,.98)
+    );
+
+    border:1px solid rgba(0,234,255,.35);
+
+    box-shadow:
+    0 0 30px rgba(0,110,255,.45);
+
+    color:#fff;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.35);
+
+    transition:
+        transform .35s ease,
+        opacity .35s ease;
+
+    opacity:0;
+
+    z-index:999999;
+}
+
+#bannerAviso.show{
+
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+
+}
+
+
+/* =========================
+   MODAL RESTAURAR
+========================= */
+
+.modal-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.75);
+
+    backdrop-filter:blur(6px);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:.30s;
+
+    z-index:9999999;
+
+}
+
+.modal-overlay.show{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+.modal-box{
+
+    width:500px;
+
+    max-width:90%;
+
+    padding:35px;
+
+    border-radius:22px;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(25,35,60,.98),
+        rgba(5,8,18,.98)
+    );
+
+    border:1px solid rgba(0,234,255,.25);
+
+    box-shadow:
+
+        0 0 40px rgba(0,110,255,.45),
+
+        inset 0 0 30px rgba(255,255,255,.04);
+
+    text-align:center;
+
+    transform:scale(.9);
+
+    transition:.30s;
+
+}
+
+.modal-overlay.show .modal-box{
+
+    transform:scale(1);
+
+}
+
+.modal-icon{
+
+    font-size:60px;
+
+    margin-bottom:10px;
+
+}
+
+.modal-box h2{
+
+    margin:0;
+
+    color:#00eaff;
+
+}
+
+.modal-box p{
+
+    margin:25px 0;
+
+    color:#ddd;
+
+    line-height:1.8;
+
+}
+
+.modal-buttons{
+
+    display:flex;
+
+    gap:15px;
+
+}
+
+.modal-buttons button{
+
+    flex:1;
+
+}
+
+.btn-cancelar{
+
+    background:#353535;
+
+}
+
+.btn-cancelar:hover{
+
+    background:#444;
+
+}
+
+.btn-restaurar{
+
+    background:
+    linear-gradient(
+        90deg,
+        #ff2b2b,
+        #ff5b5b
+    );
+
+    box-shadow:
+    0 0 20px rgba(255,0,0,.35);
+
+}
+
+.btn-restaurar:hover{
+
+    box-shadow:
+    0 0 35px rgba(255,0,0,.55);
+
+}
+
+/* =========================
+   BOTÕES SOLTOS DO GRID
+========================= */
+
+.editor-button{
+
+    display:flex;
+
+    align-items:flex-start;
+
+}
+
+
+.editor-button button{
+
+    width:100%;
+
+    height:50px;
+
+    margin-top:8px;
+
+    padding:0;
+
+    font-size:14px;
+
+    border-radius:8px;
+
+}
+
+
 </style>
 
 
@@ -829,8 +1267,16 @@ button:hover{
 
 
 
-<h2>
-🔥 Like Counter Live
+<h2 class="titulo-principal">
+
+    <img
+        src="like.png"
+        class="titulo-icon"
+        alt="Like"
+    >
+
+    Like Counter Live
+
 </h2>
 
 
@@ -872,33 +1318,44 @@ Aguardando live...
 
 <div class="obs">
 
+    <h3 class="obs-title">
 
-<b>📺 Como usar no OBS:</b>
+        <img
+            src="obs-studio.png"
+            class="obs-logo"
+            alt="OBS Studio"
+        >
 
-<br><br>
+        Configuração do OBS Studio
 
+    </h3>
 
-1️⃣ Inicie a live pelo botão acima
+    <div class="obs-step">
+        <span>1</span>
+        Clique em <b>🚀 Iniciar Contador</b> para conectar sua live.
+    </div>
 
-<br>
+    <div class="obs-step">
+        <span>2</span>
+        Copie a <b>URL do Overlay</b> gerada automaticamente.
+    </div>
 
-2️⃣ Copie a URL do Overlay gerada
+    <div class="obs-step">
+        <span>3</span>
+        No <b>OBS Studio</b>, vá em:
+        <b>Fontes → + → Navegador</b>.
+    </div>
 
-<br>
+    <div class="obs-step">
+        <span>4</span>
+        Cole a URL no campo <b>URL</b> da fonte Navegador.
+    </div>
 
-3️⃣ No OBS: Fontes → + → Navegador
-
-<br>
-
-4️⃣ Cole a URL
-
-<br>
-
-5️⃣ Use: 560 x 150 Pixels
-
-<br>
-
-
+    <div class="obs-step">
+        <span>5</span>
+        Configure a resolução para
+        <b>560 × 150 pixels</b>.
+    </div>
 
 </div>
 
@@ -907,13 +1364,30 @@ Aguardando live...
 
 <div class="logo">
 
-BREEZA FF • Like Counter
+    BREEZA • Like Counter
+
+    <br><br>
+
+    <a
+        href="https://www.youtube.com/@BreezaFF"
+        target="_blank"
+        class="youtube-btn"
+    >
+
+        <img
+            src="youtube.png"
+            alt="YouTube"
+            class="youtube-icon"
+        >
+
+        CRIADOR • YouTube
+
+    </a>
 
 </div>
 
-
 </div>
-<!-- FECHA BOX LIKE COUNTER -->
+
 
 <div class="preview" style="grid-area:preview;">
 
@@ -945,6 +1419,27 @@ src="overlay.html">
 <h3>
 ⚙ Personalização
 </h3>
+
+<div class="editor-aviso">
+
+    <span class="icone">
+        💡
+    </span>
+
+    <div>
+
+        <b>Antes de salvar sua arte</b>
+
+        <br>
+
+        Cole o link da sua live e clique em
+        <b>🚀 Iniciar Contador</b>.
+        Somente depois será possível utilizar a opção
+        <b>💾 Salvar</b>.
+
+    </div>
+
+</div>
 
 
 
@@ -1061,39 +1556,6 @@ value="#00eaff"
 
 
 <!-- PERFIL -->
-
-<div class="editor-item">
-
-<label>
-🌈 Borda Perfil
-</label>
-
-<input
-type="color"
-id="bordaColor"
-value="#00eaff"
->
-
-</div>
-
-
-
-<div class="editor-item">
-
-<label>
-🎨 Fundo Card
-</label>
-
-<input
-type="color"
-id="fundoCard"
-value="#12151f"
->
-
-</div>
-
-
-
 
 
 <!-- AVATAR NEON -->
@@ -1241,25 +1703,27 @@ value="75"
 </div>
 
 
+<!-- BOTÃO SALVAR -->
+
+<div class="editor-button">
+
+<button onclick="salvarConfig()">
+💾 Salvar
+</button>
 
 </div>
 
 
 
+<!-- BOTÃO RESTAURAR -->
 
-<button onclick="salvarConfig()">
-
-💾 Salvar
-
-</button>
-
-
+<div class="editor-button">
 
 <button onclick="restaurarConfig()">
-
 🔄 Restaurar
-
 </button>
+
+</div>
 
 
 
@@ -1277,6 +1741,53 @@ value="75"
 
 </div>
 
+<!-- =========================
+     MODAL RESTAURAR
+========================= -->
+
+<div id="modalRestaurar" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <div class="modal-icon">
+            ⚠️
+        </div>
+
+        <h2>Restaurar Arte?</h2>
+
+        <p>
+
+            Esta ação irá restaurar todas as personalizações
+            para o modelo original.
+
+            <br><br>
+
+            As alterações atuais serão perdidas e esta ação
+            não poderá ser desfeita.
+
+        </p>
+
+        <div class="modal-buttons">
+
+            <button
+                class="btn-cancelar"
+                onclick="fecharModalRestaurar()"
+            >
+                Cancelar
+            </button>
+
+            <button
+                class="btn-restaurar"
+                onclick="confirmarRestauracao()"
+            >
+                Restaurar Arte
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script src="painel.js"></script>
 

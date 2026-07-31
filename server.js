@@ -305,23 +305,16 @@ app.post("/video", async(req,res)=>{
 
     res.json({
 
+        ok: true,
 
-        ok:true,
+        video: videoId,
 
+        titulo: contadores[contadorId].dados.titulo,
 
-        video:videoId,
-
-
-        id:contadorId,
-
-
+        id: contadorId,
 
         overlay:
-
-
-        `${req.protocol}://${req.get("host")}/overlay.html?id=${contadorId}`
-
-
+            `${req.protocol}://${req.get("host")}/overlay.html?id=${contadorId}`
 
     });
 
@@ -336,17 +329,11 @@ app.post("/video", async(req,res)=>{
 
 
 
-// ===============================
-// ATUALIZA UM CONTADOR
-// ===============================
-
 async function atualizarDados(contadorId){
-
 
 
     const contador =
     contadores[contadorId];
-
 
 
     if(!contador)
@@ -355,76 +342,98 @@ async function atualizarDados(contadorId){
 
 
 
-
-    const dados =
-    await youtube.buscarDados(
-        contador.videoId
-    );
+    try{
 
 
-
-    if(!dados)
-
-        return;
+        const dados =
+        await youtube.buscarDados(
+            contador.videoId
+        );
 
 
 
+        if(!dados){
 
+            console.log(
+                "YouTube não retornou dados:",
+                contadorId
+            );
 
-    const meta =
-    goals.calcularMeta(
-        dados.likes
-    );
+            return;
 
-
-
-
-    const progresso =
-    goals.calcularProgresso(
-        dados.likes,
-        meta
-    );
+        }
 
 
 
 
+        const meta =
+        goals.calcularMeta(
+            dados.likes
+        );
 
 
-    contador.dados={
 
-
-        ...dados,
-
-
-        online:true,
-
-
-        meta,
-
-
-        progresso
-
-
-    };
+        const progresso =
+        goals.calcularProgresso(
+            dados.likes,
+            meta
+        );
 
 
 
 
 
-    console.log(
+        contador.dados={
 
-        "CONTADOR:",
-        contadorId,
 
-        "| LIKES:",
-        dados.likes
+            ...contador.dados,
 
-    );
+            ...dados,
 
+
+            online:true,
+
+
+            meta,
+
+
+            progresso
+
+
+        };
+
+
+
+
+
+        console.log(
+
+            "CONTADOR:",
+            contadorId,
+
+            "| TITULO:",
+            dados.titulo,
+
+            "| LIKES:",
+            dados.likes
+
+        );
+
+
+
+    }catch(e){
+
+
+        console.log(
+            "Erro atualizar contador:",
+            e.message
+        );
+
+
+    }
 
 
 }
-
 
 
 
@@ -450,7 +459,7 @@ setInterval(()=>{
     });
 
 
-},15000);
+},7000);
 
 
 

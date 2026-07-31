@@ -118,36 +118,56 @@ async function iniciar(){
 
         <div class="status-ok">
 
-        ✅ Live conectada
+            ✅ <b>Live conectada com sucesso!</b>
 
         </div>
 
         <br>
 
-        🎥 ID DA LIVE:
+        🎬 <b>Título da Live</b>
 
-        <b>
-        ${dados.video}
-        </b>
+        <div style="
+            margin-top:10px;
+            padding:14px;
+            background:rgba(0,234,255,.08);
+            border:1px solid rgba(0,234,255,.25);
+            border-left:4px solid #00eaff;
+            border-radius:12px;
+            color:#ffffff;
+            font-weight:700;
+            line-height:1.6;
+            word-break:break-word;
+        ">
 
+            ${dados.titulo}
 
-        <br><br>
+        </div>
 
+        <br>
 
-        🔐 ID DO CONTADOR:
+        🔐 <b>ID do Contador</b>
 
-        <b style="color:#00eaff">
+        <br>
+
+        <span style="
+        display:inline-block;
+        margin-top:8px;
+        padding:8px 12px;
+        background:#111;
+        border:1px solid #333;
+        border-radius:8px;
+        color:#00eaff;
+        font-family:Consolas, monospace;
+        font-size:14px;
+        ">
 
         ${dados.id}
 
-        </b>
-
+        </span>
 
         <br><br>
 
-
-        📺 <b>URL PARA O OBS:</b>
-
+        📺 <b>URL para o OBS</b>
 
         <input
 
@@ -158,43 +178,31 @@ async function iniciar(){
         readonly
 
         style="
-
         width:100%;
-
-        padding:10px;
-
+        padding:12px;
         margin-top:10px;
-
         background:#111;
-
         color:#00eaff;
-
         border:1px solid #333;
-
-        border-radius:8px;
-
+        border-radius:10px;
+        font-family:Consolas, monospace;
         "
 
         >
-
-
 
         <button
 
         onclick="copiarOverlay()"
 
-        style="margin-top:10px"
+        style="margin-top:12px"
 
         >
 
-        📋 Copiar URL OBS
+        📋 Copiar URL do Overlay
 
         </button>
 
-
         `;
-
-
 
     }else{
 
@@ -280,7 +288,33 @@ function carregarContadorPorRota(){
 
 }
 
+function mostrarBanner(mensagem){
 
+    let banner = document.getElementById("bannerAviso");
+
+    if(!banner){
+
+        banner = document.createElement("div");
+
+        banner.id = "bannerAviso";
+
+        document.body.appendChild(banner);
+
+    }
+
+    banner.innerHTML = mensagem;
+
+    banner.classList.add("show");
+
+    clearTimeout(banner.timer);
+
+    banner.timer = setTimeout(()=>{
+
+        banner.classList.remove("show");
+
+    },4500);
+
+}
 
 function copiarOverlay(){
 
@@ -299,8 +333,8 @@ function copiarOverlay(){
     );
 
 
-    alert(
-        "URL do OBS copiada!"
+    mostrarBanner(
+        "📋 <b>URL copiada com sucesso!</b><br>Agora basta colar a URL na fonte <b>Navegador</b> do OBS."
     );
 
 
@@ -537,74 +571,80 @@ function atualizarOverlay(){
 
 
 
-
-
 // ==============================
 // SALVAR MANUAL
 // ==============================
 
-
 async function salvarConfig(){
 
+    // Verifica se o contador foi iniciado
+    if(!window.CONTADOR_ID){
 
-    if(window.CONTADOR_ID){
+        mostrarBanner(
+            "⚠️ Por favor, insira o link da sua live e clique em <b>🚀 Iniciar Contador</b> antes de usar a opção <b>💾 Salvar</b>."
+        );
 
-        try{
-
-            await fetch(
-
-                "/config/" +
-
-                window.CONTADOR_ID,
-
-                {
-
-                    method:"POST",
-
-                    headers:{
-
-                        "Content-Type":"application/json"
-
-                    },
-
-                    body:JSON.stringify(
-                        overlayConfig
-                    )
-
-                }
-
-            );
-
-            console.log(
-                "Configuração salva no servidor"
-            );
-
-        }catch(e){
-
-            console.log(
-                "Erro ao salvar:",
-                e
-            );
-
-        }
-
+        return;
     }
 
+    try{
 
+        await fetch(
 
-    localStorage.setItem(
+            "/config/" +
 
-        "overlayConfig",
+            window.CONTADOR_ID,
 
-        JSON.stringify(
-            overlayConfig
-        )
+            {
 
-    );
+                method:"POST",
 
+                headers:{
 
+                    "Content-Type":"application/json"
 
-    atualizarOverlay();
+                },
+
+                body:JSON.stringify(
+                    overlayConfig
+                )
+
+            }
+
+        );
+
+        console.log(
+            "Configuração salva no servidor"
+        );
+
+        localStorage.setItem(
+
+            "overlayConfig",
+
+            JSON.stringify(
+                overlayConfig
+            )
+
+        );
+
+        atualizarOverlay();
+
+        mostrarBanner(
+            "✨ <b>Arte salva com sucesso!</b><br>Todas as alterações foram aplicadas e já estão disponíveis no Overlay."
+        );
+
+    }catch(e){
+
+        console.log(
+            "Erro ao salvar:",
+            e
+        );
+
+        mostrarBanner(
+            "❌ <b>Não foi possível salvar sua arte.</b><br>Verifique sua conexão e tente novamente."
+        );
+
+    }
 
 }
 
@@ -1060,6 +1100,40 @@ async function carregarConfig(){
 
 }
 
+function abrirModalRestaurar(){
+
+    document
+        .getElementById("modalRestaurar")
+        .classList.add("show");
+
+}
+
+function fecharModalRestaurar(){
+
+    document
+        .getElementById("modalRestaurar")
+        .classList.remove("show");
+
+}
+
+function confirmarRestauracao(){
+
+    fecharModalRestaurar();
+
+    localStorage.removeItem("overlayConfig");
+
+    mostrarBanner(
+        "🔄 <b>Arte restaurada!</b><br>O modelo original foi carregado com sucesso."
+    );
+
+    setTimeout(()=>{
+
+        location.reload();
+
+    },1200);
+
+}
+
 
 // ==============================
 // RESTAURAR
@@ -1068,17 +1142,9 @@ async function carregarConfig(){
 
 function restaurarConfig(){
 
-
-    localStorage.removeItem(
-        "overlayConfig"
-    );
-
-
-    location.reload();
-
+    abrirModalRestaurar();
 
 }
-
 
 
 // ==============================

@@ -4,7 +4,8 @@ require("dotenv").config();
 
 const API_KEY = process.env.YOUTUBE_API_KEY;
 
-    if(!API_KEY){
+
+if(!API_KEY){
 
     console.log(
         "ERRO: YOUTUBE_API_KEY não encontrada no .env"
@@ -14,22 +15,26 @@ const API_KEY = process.env.YOUTUBE_API_KEY;
 
 
 
-async function buscarDados(videoId) {
+// =================================
+// PEGA DADOS COMPLETOS (SÓ NO INÍCIO)
+// =================================
+
+async function buscarDados(videoId){
 
 
-    try {
+    try{
 
 
-        const { data } = await axios.get(
+        const {data} = await axios.get(
 
             "https://www.googleapis.com/youtube/v3/videos",
 
             {
 
-                params: {
+                params:{
 
                     part:
-                    "snippet,statistics,liveStreamingDetails",
+                    "snippet,statistics",
 
                     id:
                     videoId,
@@ -45,18 +50,14 @@ async function buscarDados(videoId) {
 
 
 
-        if (!data.items || data.items.length === 0)
+        if(!data.items || data.items.length === 0)
 
             return null;
 
 
 
-
-        const video = data.items[0];
-
-        console.log("RESPOSTA YOUTUBE:");
-        console.log(video.statistics);
-        console.log(video.liveStreamingDetails);
+        const video =
+        data.items[0];
 
 
 
@@ -67,39 +68,13 @@ async function buscarDados(videoId) {
             video.id,
 
 
-
             titulo:
             video.snippet.title,
-
-
-
-            canal:
-            video.snippet.channelTitle,
-
-
-
-            thumb:
-            video.snippet.thumbnails?.high?.url || "",
-
 
 
             likes:
             Number(
                 video.statistics.likeCount || 0
-            ),
-
-
-
-            views:
-            Number(
-                video.statistics.viewCount || 0
-            ),
-
-
-
-            viewers:
-            Number(
-                video.liveStreamingDetails?.concurrentViewers || 0
             )
 
 
@@ -107,15 +82,12 @@ async function buscarDados(videoId) {
 
 
 
-    } catch (e) {
+    }catch(e){
 
 
         console.log(
-
             "Erro YouTube API:",
-
             e.response?.data || e.message
-
         );
 
 
@@ -129,8 +101,87 @@ async function buscarDados(videoId) {
 
 
 
+
+
+// =================================
+// ATUALIZA SOMENTE LIKES
+// =================================
+
+async function buscarLikes(videoId){
+
+
+    try{
+
+
+        const {data} = await axios.get(
+
+            "https://www.googleapis.com/youtube/v3/videos",
+
+            {
+
+                params:{
+
+                    part:"statistics",
+
+                    id:videoId,
+
+                    key:API_KEY
+
+                }
+
+            }
+
+        );
+
+
+
+        if(!data.items || data.items.length === 0)
+
+            return null;
+
+
+
+        const video =
+        data.items[0];
+
+
+
+        return {
+
+            likes:
+            Number(
+                video.statistics.likeCount || 0
+            )
+
+        };
+
+
+    }catch(e){
+
+
+        console.log(
+            "Erro buscando likes:",
+            e.response?.data || e.message
+        );
+
+
+        return null;
+
+
+    }
+
+
+}
+
+
+
+
 module.exports = {
 
-    buscarDados
+
+    buscarDados,
+
+    buscarLikes
+
 
 };
