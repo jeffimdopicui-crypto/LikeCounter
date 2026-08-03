@@ -359,7 +359,7 @@ let overlayConfig = {
 
     likeTextGlow2:"#008cff",
 
-    likeSize:75,
+    likeSize:65,
 
 
 
@@ -380,7 +380,7 @@ let overlayConfig = {
     // AVATAR
     // ==============================
 
-    avatarSize:85,
+    avatarSize:65,
 
     avatarImg:"avatar.png",
 

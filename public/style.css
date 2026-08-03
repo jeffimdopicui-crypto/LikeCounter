@@ -16,7 +16,7 @@
 
     --like-text-glow-2:#008cff;
 
-    --like-size:75px;
+    --like-size:70px;
 
 
 
@@ -24,7 +24,7 @@
        AVATAR
     ========================= */
 
-    --avatar-size:85px;
+    --avatar-size:65px;
 
     --avatar-glow-1:#00eaff;
 
@@ -69,26 +69,12 @@
     ========================= */
 
     --fundo-overlay:
-
-    linear-gradient(
-        180deg,
-        rgba(38,42,50,.98) 0%,
-        rgba(23,26,34,.98) 45%,
-        rgba(12,14,19,.98) 100%
-    );
-
-
-
-    /* =========================
-       CAMADA INTERNA
-    ========================= */
-
-    --fundo-interno:
-
     linear-gradient(
         135deg,
-        rgba(20,24,40,.96),
-        rgba(5,8,18,.95)
+        #0f0f0f 0%,
+        #0f0f0f 30%,
+        #0f0f0f 70%,
+        #0f0f0f 100%
     );
 
 
@@ -107,10 +93,22 @@ body {
 
     margin:0;
 
+    width:100%;
+    height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
     background:
     var(--fundo-body);
 
+
     overflow:hidden;
+
 
     font-family:
     "Arial",
@@ -118,7 +116,7 @@ body {
 
 }
 
- /* =========================
+/* =========================
    CARD PREMIUM
 ========================= */
 
@@ -126,7 +124,7 @@ body {
 
     width:520px;
 
-    height:125px;
+    height:100px;
 
 
     display:flex;
@@ -134,7 +132,7 @@ body {
     align-items:center;
 
 
-    padding:10px 18px;
+    padding:7px 20px;
 
 
     border-radius:24px;
@@ -231,7 +229,7 @@ body {
 
     animation:
 
-    borderMove 4s linear infinite;
+    borderMove 7s linear infinite;
 
 
     z-index:-2;
@@ -275,17 +273,26 @@ body {
 
 .container::after {
 
-    content:"";
+    content: "";
 
-    position:absolute;
+    position: absolute;
 
-    inset:2px;
+    inset: 2px;
 
-    border-radius:22px;
+    border-radius: 22px;
 
-    background:var(--fundo-interno);
+    background:
+    radial-gradient(circle at 20% 50%, rgba(0, 0, 0, 0.14), transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(0,120,255,.10), transparent 35%),
+    linear-gradient(
+        135deg,
+        #080808 0%,
+        #0d0d0e 35%,
+        #0c0c0c 70%,
+        #10151d 100%
+    );
 
-    z-index:-1;
+    z-index: -1;
 
 }
 
@@ -357,21 +364,18 @@ body {
 
 
 
- /* =========================
+/* =========================
    TEXTOS
 ========================= */
 
 
 .textos {
-
-    flex:1;
-
-    text-align:center;
-
-    color:white;
-
-    transform:translateX(0px);
-
+    flex: 1;
+    text-align: left;
+    color: white;
+    padding-left: 35px; /* Espaço da borda esquerda */
+    margin-left:-25px;
+    transform: translateX(0px);
 }
 
 
@@ -379,7 +383,7 @@ body {
 
 .titulo{
 
-    font-size:19px;
+    font-size:17px;
 
     font-weight:900;
 
@@ -415,33 +419,40 @@ body {
 
 .numeros{
 
-    margin-top:4px;
-
-    margin-bottom:22px;
-
-    font-size:47px;
-
-    font-weight:1000;
+    width:250px;
 
     display:flex;
+    justify-content:flex-start;
+    align-items:center;
 
-    justify-content:center;
+    margin-top:3px;
+    margin-bottom:14px;
 
-    gap:10px;
+    margin-left:-1px;
+
+    font-size:35px;
+    font-weight:1000;
+
+    white-space:nowrap;
 
 }
 
 
 
+#likes{
 
-
-#likes {
+    display:inline-block;
 
     color:#ffffff;
 
     text-shadow:
+        0 0 6px rgba(255,255,255,.35);
 
-    0 0 6px rgba(255,255,255,.35);
+    transform-origin:left center; /* fixa a esquerda */
+
+    will-change:transform;
+
+    transition:transform .25s ease;
 
 }
 
@@ -536,52 +547,33 @@ body {
 
 
 
- /* =========================
+/* =========================
    BARRA DE PROGRESSO
 ========================= */
 
-
 .barra-container {
-
 
     position:absolute;
 
-
     bottom:-2px;
 
+    left:0;
+    right:0;
 
-    left:-95px;
-
-
-    right:-110px;
-
-
-
-    height:6px;
-
-
+    width:100%;
+    
+    height:10px;
+    margin-left:12px;
 
     background:
-
-
     rgba(255,255,255,.08);
-
-
 
     border-radius:30px;
 
-
-
     overflow:hidden;
 
-
-
     box-shadow:
-
-
     inset 0 0 10px #000;
-
-
 
 }
 
@@ -756,40 +748,39 @@ body {
 ========================= */
 
 
-.pop {
+.pop{
 
-
-    animation:
-
-    likePop .35s ease;
-
+    animation:likePop .45s cubic-bezier(.22,1,.36,1);
 
 }
 
-
-
-@keyframes likePop {
-
+@keyframes likePop{
 
     0%{
 
-        transform:scale(1);
+        transform:translateY(0) scale(1);
+        filter:brightness(1);
 
     }
 
+    30%{
 
-    50%{
-
-        transform:scale(1.25);
+        transform:translateY(-6px) scale(1.22);
+        filter:brightness(1.8);
 
     }
 
+    60%{
+
+        transform:translateY(0) scale(.94);
+
+    }
 
     100%{
 
-        transform:scale(1);
+        transform:translateY(0) scale(1);
+        filter:brightness(1);
 
     }
-
 
 }

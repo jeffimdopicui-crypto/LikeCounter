@@ -1,4 +1,5 @@
 let likes = 0;
+let ultimoLike = -1;
 
 
 const txtLikes =
@@ -283,11 +284,25 @@ async function atualizar(){
 
 
 
-        txtLikes.innerText =
+        if(likes !== ultimoLike){
 
-        likes.toLocaleString(
-            "pt-BR"
-        );
+            txtLikes.classList.remove("pop");
+
+            void txtLikes.offsetWidth;
+
+
+            txtLikes.innerText =
+            likes.toLocaleString("pt-BR");
+
+
+            ajustarTamanhoLikes(likes);
+
+
+            txtLikes.classList.add("pop");
+
+            ultimoLike = likes;
+
+        }
 
 
 
@@ -387,6 +402,33 @@ function carregarIDHash(){
 
 
 // =================================
+// AJUSTA TAMANHO DO LIKE AUTOMÁTICO
+// =================================
+function ajustarTamanhoLikes(valor){
+
+    let escala = 1;
+
+
+    if(valor >= 10000)
+        escala = 0.85;
+
+
+    if(valor >= 100000)
+        escala = 0.70;
+
+
+    if(valor >= 1000000)
+        escala = 0.55;
+
+
+    txtLikes.style.transform =
+    `scale(${escala})`;
+
+}
+
+
+
+// =================================
 // INICIALIZA
 // =================================
 
@@ -394,7 +436,6 @@ carregarIDHash();
 
 
 atualizar();
-
 
 
 
