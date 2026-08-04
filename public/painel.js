@@ -55,6 +55,29 @@ async function iniciar(){
 
 
         // ==============================
+        // ATUALIZA STATUS DO PREVIEW
+        // ==============================
+
+        const statusPreview =
+        document.getElementById(
+            "statusPreview"
+        );
+
+
+        if(statusPreview){
+
+            statusPreview.classList.remove("offline");
+
+            statusPreview.classList.add("online");
+
+            statusPreview.innerHTML =
+
+            `<span class="status-dot"></span> Ao vivo`;
+
+        }
+
+
+        // ==============================
         // ALTERA A ROTA DO SITE
         // ==============================
 

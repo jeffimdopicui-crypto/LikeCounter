@@ -373,7 +373,17 @@ async function iniciarContador(contadorId){
 
         // atualiza likes logo no início
 
-        await atualizarLikes(contadorId);
+        // atualiza likes logo no início
+
+        const likesPorId =
+        await youtube.buscarLikesEmLote(
+            [contador.videoId]
+        );
+
+        processarLikesAtualizados(
+            contadorId,
+            likesPorId[contador.videoId]
+        );
 
 
 
@@ -410,7 +420,12 @@ async function iniciarContador(contadorId){
 }
 
 
-async function atualizarLikes(contadorId){
+// ===============================
+// ATUALIZA UM CONTADOR
+// COM LIKES JÁ BUSCADOS EM LOTE
+// ===============================
+
+function processarLikesAtualizados(contadorId, likes){
 
 
     const contador =
@@ -421,70 +436,108 @@ async function atualizarLikes(contadorId){
         return;
 
 
-
-    try{
-
-
-        const dados =
-        await youtube.buscarLikes(
-            contador.videoId
-        );
+    if(likes === undefined)
+        return;
 
 
 
-        if(!dados)
-            return;
+    const meta =
+    goals.calcularMeta(
+        likes
+    );
 
 
 
-        const meta =
-        goals.calcularMeta(
-            dados.likes
-        );
+    const progresso =
+    goals.calcularProgresso(
+        likes,
+        meta
+    );
 
 
 
-        const progresso =
-        goals.calcularProgresso(
-            dados.likes,
-            meta
-        );
+    contador.dados = {
+
+        ...contador.dados,
+
+        likes,
+
+        meta,
+
+        progresso,
+
+        online:true
+
+    };
 
 
 
-        contador.dados = {
+    console.log(
+        "CONTADOR:",
+        contadorId,
+        "| LIKES:",
+        likes
+    );
 
-            ...contador.dados,
 
-            likes:
-            dados.likes,
-
-            meta,
-
-            progresso,
-
-            online:true
-
-        };
+}
 
 
 
-        console.log(
-            "CONTADOR:",
-            contadorId,
-            "| LIKES:",
-            dados.likes
-        );
+// ===============================
+// ATUALIZA TODOS OS CONTADORES
+// EM LOTES (MÁX 50 IDs POR CHAMADA)
+// ===============================
+
+async function atualizarTodosContadores(){
+
+
+    const ids =
+    Object.keys(contadores);
+
+
+    if(ids.length === 0)
+        return;
 
 
 
-    }catch(e){
+    const lotes =
+    youtube.dividirEmLotes(ids, 50);
 
 
-        console.log(
-            "Erro atualizar likes:",
-            e.message
-        );
+
+    for(const lote of lotes){
+
+
+        try{
+
+
+            const likesPorId =
+            await youtube.buscarLikesEmLote(lote);
+
+
+
+            lote.forEach(id => {
+
+                processarLikesAtualizados(
+                    id,
+                    likesPorId[id]
+                );
+
+            });
+
+
+
+        }catch(e){
+
+
+            console.log(
+                "Erro atualizando lote de contadores:",
+                e.message
+            );
+
+
+        }
 
 
     }
@@ -494,20 +547,10 @@ async function atualizarLikes(contadorId){
 
 
 
-// ===============================
-// ATUALIZA TODOS OS CONTADORES
-// ===============================
-
-setInterval(()=>{
-
-    Object.keys(contadores)
-    .forEach(id=>{
-
-        atualizarLikes(id);
-
-    });
-
-},10000);
+setInterval(
+    atualizarTodosContadores,
+    10000
+);
 
 
 

@@ -141,15 +141,29 @@ async function buscarDados(videoId){
 
 
 // =================================
-// ATUALIZA APENAS LIKE
+// ATUALIZA LIKES EM LOTE
 // CHAMAR A CADA 10 SEGUNDOS
+// RECEBE UM ARRAY DE videoIds
+// (até 50 por chamada)
 // =================================
 
-async function buscarLikes(videoId){
+async function buscarLikesEmLote(videoIds){
 
 
     if(!API_KEY)
-        return null;
+        return {};
+
+
+    if(!videoIds || videoIds.length === 0)
+        return {};
+
+
+
+    // GARANTE MÁXIMO DE 50 IDs
+    // (LIMITE DA API)
+
+    const lote =
+    videoIds.slice(0, 50);
 
 
 
@@ -168,7 +182,7 @@ async function buscarLikes(videoId){
 
 
                 id:
-                videoId,
+                lote.join(","),
 
 
                 key:
@@ -182,36 +196,32 @@ async function buscarLikes(videoId){
 
 
 
-        const video =
-        resposta.data.items?.[0];
+        const itens =
+        resposta.data.items || [];
 
 
 
-        if(!video){
+        // TRANSFORMA EM UM OBJETO
+        // { videoId: likes }
+        // PRA FICAR FÁCIL DE CONSULTAR
+
+        const resultado = {};
 
 
-            console.log(
-                "Nenhum vídeo retornado:",
-                videoId
+        itens.forEach(video => {
+
+
+            resultado[video.id] =
+            Number(
+                video.statistics?.likeCount || 0
             );
 
 
-            return null;
-
-        }
+        });
 
 
 
-        return {
-
-
-            likes:
-            Number(
-                video.statistics?.likeCount || 0
-            )
-
-
-        };
+        return resultado;
 
 
 
@@ -220,17 +230,49 @@ async function buscarLikes(videoId){
 
         console.log(
 
-            "Erro buscando likes:",
+            "Erro buscando likes em lote:",
 
             e.response?.data || e.message
 
         );
 
 
-        return null;
+        return {};
 
 
     }
+
+
+}
+
+
+
+
+
+
+// =================================
+// DIVIDE UM ARRAY GRANDE DE IDs
+// EM LOTES DE 50
+// USE SE TIVER MAIS DE 50 LIVES
+// AO MESMO TEMPO
+// =================================
+
+function dividirEmLotes(array, tamanho = 50){
+
+
+    const lotes = [];
+
+
+    for(let i = 0; i < array.length; i += tamanho){
+
+        lotes.push(
+            array.slice(i, i + tamanho)
+        );
+
+    }
+
+
+    return lotes;
 
 
 }
@@ -246,7 +288,10 @@ module.exports = {
     buscarDados,
 
 
-    buscarLikes
+    buscarLikesEmLote,
+
+
+    dividirEmLotes
 
 
 };
